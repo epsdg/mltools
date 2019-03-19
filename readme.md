@@ -156,7 +156,7 @@ Implemented for GBMModel and tf/keras FFN models only.  Plots round-by-round val
 model.plot_results(filename='evals_plot.png')
 ```
 
-** Plot regression predictions**
+**Plot regression predictions**
 
 Implemented for GBM and tf/keras.  When calling `grid_cv()`, pass `plot_n_samples` (sample predictions per fold) to generate a plot of predicted vs. actual regression results by fold.  Plots displayed inline in notebooks, and also saved as `./CV_preds_plot.png`.
 ```python
