@@ -88,7 +88,8 @@ model = FFNRegressor(X_train, y_train, X_test,
 
 Load params from the params_file path/filename
 ```python
-model.load_hparams()```
+model.load_hparams()
+```
 
 **Preprocess inputs**
 
@@ -110,7 +111,8 @@ model.preprocess(fillna=True,
                  standardize=True,
                  clip_outliers=None,
                  use_PCA=True,
-                 n_PCA_components=50))```
+                 n_PCA_components=50))
+```
 
 For skl_model.SKLModelSet, the preprocess method also generates a PCA dataset (`use_PCA=True`).  Pass `n_PCA_components` to limit PCA inputs to the n primary principal components To include all PCA components in the dataset, set `n_PCA_components=-1`
 
@@ -214,7 +216,8 @@ batch_norm_momentum: 0.9999
 pos_weight: 1
 
 predict_chunk_size: 1000
-binary_metrics: tf  # tf, sklearn, both```
+binary_metrics: tf  # tf, sklearn, both
+```
 
 Sample log results:
 ```
