@@ -12,12 +12,24 @@ mltools features include:
 
 ## Model Sets
 
-Currently supports the following model classes:
+### scikit-learn
+**models.skl_model.SKLModelSet**: Supports most classifiers from the [scikit-learn](https://scikit-learn.org/stable/supervised_learning.html#supervised-learning) library, including:
+* Logistic regression
+* Support vector classifier (SVC) using SGD
+* SGD classifier
+* Random forests
+* AdaBoost
+* k-nearest neighbors (knn)
 
-**models.skl_model.SKLModelSet**: Supports most classifiers from the [scikit-learn](https://scikit-learn.org/stable/supervised_learning.html#supervised-learning) library
+### MART/gradient boosted machine
 
-**models.gbm_model.GBMModel**: MART/boosted trees using either [XGBoost](https://xgboost.readthedocs.io) (`library: 'xgb'`) or [LightGBM](https://lightgbm.readthedocs.io) (`library: 'lgbm'`).  Allows for easy switching between the two libraries using the same dataset.  Supports classification or regression depending on objective set in the params file.  **Note:** params are different depending on the library selected.  Consult the API ref for [XGBoost](https://xgboost.readthedocs.io/en/latest/parameter.html) or [LightGBM](https://lightgbm.readthedocs.io/en/latest/Parameters.html) for specific parameter options.  A sample params file for each library is provided in `/mltools/sample_params`.
+**models.gbm_model.GBMModel**: MART/boosted trees using either
+* [XGBoost](https://xgboost.readthedocs.io) (`library: 'xgb'`), or
+* [LightGBM](https://lightgbm.readthedocs.io) (`library: 'lgbm'`).
 
+Allows for easy switching between the two libraries using the same dataset.  Supports classification or regression depending on objective set in the params file.  **Note:** params are different depending on the library selected.  Consult the API ref for [XGBoost](https://xgboost.readthedocs.io/en/latest/parameter.html) or [LightGBM](https://lightgbm.readthedocs.io/en/latest/Parameters.html) for specific parameter options.  A sample params file for each library is provided in `/mltools/sample_params`.
+
+### Tensorflow
 **models.tf_ffn.FFNClassifier**: [TensorFlow](https://www.tensorflow.org/guide/summaries_and_tensorboard) implementation of a feedforward multi-layer perceptron (MLP) classifier using a cross entropy loss.  Currently supports binary classification only.  Requires TensorFlow 1.13.  *Will not be updated to support TensorFlow 2.x (use keras_ffn models instead)*
 
 Config options include:
@@ -32,13 +44,14 @@ Config options include:
 
 **models.tf_ffn.FFNNRegressor**:  Regression with the same config options as DNNClassifier.
 
+### Keras
 **models.keras_ffn.FFNBinaryClassifier**:  tf.keras implementation of the feedforward classifier.  Supports binary classification only.  Requires TensorFlow 1.13, and will be updated to support TensorFlow 2.0.  Supports all regularization/optimization options listed above for tf_ffn, plus several additional methods and config enhancements (detailed below)
 
 **models.keras_ffn.FFNRegressor**:  tf.keras implementation of the feedforward classifier.  Requires TensorFlow 1.13, and will be updated to support TensorFlow 2.0.  Supports all regularization/optimization options listed above for tf_ffn, plus some additional methods and config enhancements (detailed below)
 
 
 ## Basic usage
-**Initialize a model**
+##### Create a model instance
 
 New instances of all models require X_train, y_train, X_test, and a path to params_file.  X_train and X_test are pandas DataFrames.  y_test and folds_lookup are pandas Series.  X_train, y_train, X_test, and folds_lookup must have an unduplicated, single-tier integer index so that prediction outputs can be merged with the inputs.  X_train, y_train, and folds_lookup should have matching indices.
 
@@ -84,14 +97,14 @@ model = FFNRegressor(X_train, y_train, X_test,
                      tf_path=r'~/data/tf',
                      logger=logger)
 ```
-**Load parameters**
+##### Load parameters
 
 Load params from the params_file path/filename
 ```python
 model.load_hparams()
 ```
 
-**Preprocess inputs**
+##### Preprocess inputs
 
 * Available on all model classes.
 * Recommend mean-filling for all models unless you're sure there are no missing values.
@@ -118,9 +131,9 @@ For skl_model.SKLModelSet, the preprocess method also generates a PCA dataset (`
 
 *PCA is not implemented in GBM and tf/keras models.*
 
-**Grid CV**
+##### Grid CV
 
-First, set grid values for cross-validation:
+Set grid values for cross-validation:
 ```python
 model.cv_grid = {'layers': [[512, 512, 512], [1024, 512, 256, 128]],
                 'activation': ['relu', 'elu']}
@@ -137,8 +150,7 @@ results_df = model.cv_results
 ```
 
 
-**Generate predictions**
-
+##### Generate predictions
 CV predictions for each CV fold:
 ```python
 cv_outputs = model.cv_outputs()
@@ -149,14 +161,14 @@ test_outputs = model.test_outputs()
 ```
 Predictions are returned as pandas DataFrame.
 
-**Plot training metrics:**
+##### Plot training metrics
 
 Implemented for GBMModel and tf/keras FFN models only.  Plots round-by-round validation metrics (depending on the model and metrics selected) of the last completed train/eval routine.  Plots displayed inline in notebooks, and also saved as `./evals_plot.png`.
 ```python
 model.plot_results(filename='evals_plot.png')
 ```
 
-**Plot regression predictions**
+##### Plot regression predictions
 
 Implemented for GBM and tf/keras.  When calling `grid_cv()`, pass `plot_n_samples` (sample predictions per fold) to generate a plot of predicted vs. actual regression results by fold.  Plots displayed inline in notebooks, and also saved as `./CV_preds_plot.png`.
 ```python
@@ -221,33 +233,42 @@ binary_metrics: tf  # tf, sklearn, both
 
 Sample log results:
 ```
-20:15:40: starting grid CV using 'lgbm'.  base params: {'train_rounds': 300, 'early_stop_rounds': 20, 'verbose_eval': False, 'cat_feats': '', 'hparams': {'boosting': 'gbdt', 'objective': 'regression_l2', 'tree_learner': 'serial', 'metric': ['rmse', 'l1'], 'num_threads': 0, 'learning_rate': 0.03, 'max_depth': -1, 'num_leaves': 20, 'min_data_in_leaf': 20, 'bagging_fraction': 0.8, 'bagging_freq': 1, 'feature_fraction': 0.4, 'max_bin': 255, 'min_child_weight': 0.001, 'lambda_l2': 0.0, 'lambda_l1': 0.0, 'metric_freq': 1, 'verbosity': -1}}
-20:15:42: -------- FOLD 1 OF 2 --------
-20:16:17: num_leaves=20  
-20:16:17:    best validation rmse: 2.79738, round 243
-20:16:17:    best validation l1: 2.31755, round 263
-20:16:44: num_leaves=80  
-20:16:44:    best validation rmse: 2.79497, round 122
-20:16:44:    best validation l1: 2.31803, round 142
-20:17:29: num_leaves=200  
-20:17:29:    best validation rmse: 2.80399, round 110
-20:17:29:    best validation l1: 2.32164, round 130
-20:17:31: -------- FOLD 2 OF 2 --------
-20:17:54: num_leaves=20  
-20:17:54:    best validation rmse: 2.97837, round 100
-20:17:54:    best validation l1: 2.35386, round 110
-20:18:14: num_leaves=80  
-20:18:14:    best validation rmse: 2.96583, round 84
-20:18:14:    best validation l1: 2.33916, round 102
-20:18:45: num_leaves=200  
-20:18:45:    best validation rmse: 2.95897, round 71
-20:18:45:    best validation l1: 2.32865, round 91
-20:18:45: grid CV complete.
-20:18:45:
-num_leaves       best_rmse    rnd_rmse     best_l1      rnd_l1
-20                 2.88788   171.50000     2.33571   186.50000
-200                2.88148    90.50000     2.32514   110.50000
-80                 2.88040   103.00000     2.32859   122.00000
+10:31:58: filling NaN...
+10:32:04: standardizing inputs...
+10:32:09: preprocessing complete.
+10:32:09: base params:
+          -  train_mode: minibatch_gd
+          -  epoch_train_batches: 5
+          -  epoch_val_batches: 5
+          -  n_epochs: 48
+          -  loss_fn: mean_squared_error
+          -  optimizer: sgd
+          -  train_batch_size: 500
+          -  eta: 0.003
+...
+
+10:32:09: ------------------------ FOLD 1 OF 5 ------------------------
+10:32:10: clr_min=0.0003  
+10:32:12: training 800 iterations per epoch
+10:32:13:                  TRAIN       |               VAL        |
+10:32:13: EPOCH       MSE         MAE  |        MSE          MAE  |     eta
+10:32:30:    1    35.5296      4.8536  |  4845.7500    1144.9674  |  3.0e-04
+10:32:46:    2    24.4284      4.0025  |  2406.1562     453.1542  |  1.0e-02
+10:33:01:    3     8.7243      2.3302  |  1322.4580      83.5650  |  2.0e-02
+10:33:16:    4     9.0259      2.3763  |   739.8892      66.9962  |  3.0e-02
+10:33:32:    5     7.6834      2.1746  |   554.0875      19.9541  |  4.0e-02
+10:33:47:    6     7.2638      2.1065  |   370.1605      15.7916  |  3.0e-02
+10:34:02:    7     6.9415      2.0625  |   104.8456       6.9945  |  2.0e-02
+...
+...
+11:33:52:    best val MSE: 8.2830, round 44
+11:33:52:    best val MAE: 2.2673, round 46
+11:33:52:
+11:33:52: grid CV complete.
+11:33:53: CV results summary, validation scores:
+clr_min           best_MSE     rnd_MSE    best_MAE     rnd_MAE
+0.0003              7.1234     39.0000      2.0618     36.8000
+0.001               7.2158     34.0000      2.3266     35.4000
 ```
 
 ## Model-specific features & methods:
