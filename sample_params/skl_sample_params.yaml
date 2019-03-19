@@ -1,0 +1,139 @@
+models:
+  sgd_log: sklearn.linear_model.SGDClassifier
+  sgd_hinge: sklearn.linear_model.SGDClassifier
+  log_reg: sklearn.linear_model.LogisticRegression
+  nb: sklearn.naive_bayes.GaussianNB
+  rfc: sklearn.ensemble.RandomForestClassifier
+  ada: sklearn.ensemble.AdaBoostClassifier
+  xtra: sklearn.ensemble.ExtraTreesClassifier
+
+#use_models: ['sgd_log', 'sgd_hinge', 'log_reg', 'nb', 'rfc', 'ada', 'xtra']
+use_models: ['rfc']
+
+verbose: 0
+random_state: None
+default_backend: 'tpe'
+default_n_processes: 3
+
+sgd_log:
+  use_pca: True
+  decision_func: True
+  predict_proba: True
+  hparams:
+    alpha: 0.002
+    average: False
+    class_weight: 'balanced'
+    epsilon: 0.1
+    eta0: 0.00
+    fit_intercept: False # use False if data already centered
+    l1_ratio: 0.15
+    learning_rate: optimal
+    loss: log # hinge, log, modified_huber (hinge has no predict_probab)
+    max_iter: 1000
+    n_jobs: 1
+    penalty: elasticnet
+    power_t: 0.5
+    shuffle: True
+    tol: 0.001
+    warm_start: False
+
+sgd_hinge:
+  use_pca: True
+  decision_func: True
+  predict_proba: False
+  hparams:
+    alpha: 0.002
+    average: False
+    class_weight: 'balanced'
+    epsilon: 0.1
+    eta0: 0.0
+    fit_intercept: False # use False if data already centered
+    l1_ratio: 0.15
+    learning_rate: 'optimal'
+    loss: 'hinge' # hinge, log, modified_huber (hinge has no predict_probab)
+    max_iter: 1000
+    n_jobs: 1
+    penalty: 'elasticnet'
+    power_t: 0.5
+    shuffle: True
+    tol: 0.001
+    warm_start: False
+
+log_reg:
+  use_pca: True
+  decision_func: True
+  predict_proba: True
+  hparams:
+    C: 1.0
+    class_weight: balanced
+    dual: False
+    fit_intercept: True
+    intercept_scaling: 1
+    max_iter: 200
+    multi_class: ovr
+    n_jobs: 1
+    penalty: l2
+#    random_state: None
+    solver: sag # sag saga
+    tol: 0.0001
+    warm_start: False
+
+nb:
+  use_pca: True
+  decision_func: False
+  predict_proba: True
+  hparams:
+    priors: [0.921846689, 0.078153311]
+
+rfc:
+  use_pca: True
+  decision_func: False
+  predict_proba: True
+  hparams:
+    bootstrap: True
+#    class_weight: balanced
+    criterion: gini
+    max_depth: ~
+#    max_features: auto
+    max_leaf_nodes: ~
+#    min_impurity_decrease: 0.0
+    min_impurity_split: ~
+    min_samples_leaf: 1
+    min_samples_split: 2
+    min_weight_fraction_leaf: 0.0
+    n_estimators: 10
+    n_jobs: 1
+    oob_score: False
+    warm_start: False
+
+ada:
+  use_pca: True
+  decision_func: True
+  predict_proba: True
+  hparams:
+    algorithm: SAMME.R  # SAMME  (SAMME.R said to converge faster)
+    base_estimator: ~
+    learning_rate: 0.99
+    n_estimators: 50
+    random_state: ~
+
+xtra:
+  use_pca: True
+  decision_func: True
+  predict_proba: True
+  hparams:
+    bootstrap: False
+    class_weight: balanced
+    criterion: entropy #  gini, entropy
+    max_depth: ~
+    max_features: sqrt #  log2
+    max_leaf_nodes: ~
+    min_impurity_decrease: 0.0
+    min_impurity_split: ~
+    min_samples_leaf: 1
+    min_samples_split: 2
+    min_weight_fraction_leaf: 0.0
+    n_estimators: 300
+    n_jobs: 1
+    oob_score: False
+    warm_start: False

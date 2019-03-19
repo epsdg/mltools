@@ -1,0 +1,40 @@
+# For binary classification: n_inputs=1
+# For (experimental) multi-class classification,
+#        n_outputs must be set to n_classes
+# For regression, n_outputs is ignored and set to 1
+n_outputs: 1
+
+train_mode: minibatch  # 'sgd' or 'minibatch'
+# if train_mode == 'sgd', one epoch is one batch (one SGD step)
+# if train_mode == 'minibatch', one epoch is a full cycle through the train set
+n_epochs: 50
+
+optimizer: adamw
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1e-8
+adam_weight_decay: 0.0001
+momentum: 0.99
+
+objective: MSE
+eta: 1e-6
+train_batch_size: 1000
+val_batch_size: 1000
+n_val_batches: 5
+tboard_evals_step: 10
+log_evals_step: 50
+
+init_mode: FAN_AVG    #  FAN_IN, FAN_OUT, FAN_AVG
+init_uniform: 1
+layers: [512, 512, 512]
+activation: elu   #  relu, elu, selu, crelu, tanh
+regularizer: l1-l2   # l1, l2, l1-l2, None
+# drop_rates: [inputs dropout, layer1, layer2, ...]
+drop_rates: [0, 0, 0, 0]
+l2_reg_weight: 5e-7
+l1_reg_weight: 2e-7
+use_batch_norm: [0, 0, 0]
+batch_norm_momentum: 0.9999
+pos_weight: 1
+
+predict_chunk_size: 1000

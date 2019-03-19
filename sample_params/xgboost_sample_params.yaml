@@ -1,0 +1,25 @@
+train_rounds: 100
+early_stop_rounds: 20
+verbose_eval: 50
+hparams:
+# see https://xgboost.readthedocs.io/en/latest/parameter.html
+    booster: gbtree
+    objective: binary:logistic  # binary:logistic, reg:linear, reg:logistic, ...
+    tree_method: hist
+    grow_policy: lossguide
+    eval_metric: ['error', 'logloss', 'auc']
+    nthread: -1
+    eta: 0.035
+    max_depth: 6
+    max_leaves: 45
+    min_child_weight: 6
+    scale_pos_weight: 5
+    colsample_bytree: 0.8
+    colsample_bylevel: 1.0
+    colsample_bynode: 1.0
+    subsample: 0.8
+    lambda: 1  #  = l2 multiple
+    alpha: 0  # = l1 multiple
+    gamma: 0
+    verbosity: 0
+    silent: True
