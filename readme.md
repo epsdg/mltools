@@ -51,7 +51,7 @@ Config options include:
 
 
 ## Basic usage
-##### Create a model instance
+#### Create a model instance
 
 New instances of all models require X_train, y_train, X_test, and a path to params_file.  X_train and X_test are pandas DataFrames.  y_test and folds_lookup are pandas Series.  X_train, y_train, X_test, and folds_lookup must have an unduplicated, single-tier integer index so that prediction outputs can be merged with the inputs.  X_train, y_train, and folds_lookup should have matching indices.
 
@@ -97,14 +97,14 @@ model = FFNRegressor(X_train, y_train, X_test,
                      tf_path=r'~/data/tf',
                      logger=logger)
 ```
-##### Load parameters
+#### Load parameters
 
 Load params from the params_file path/filename
 ```python
 model.load_hparams()
 ```
 
-##### Preprocess inputs
+#### Preprocess inputs
 
 * Available on all model classes.
 * Recommend mean-filling for all models unless you're sure there are no missing values.
@@ -131,7 +131,7 @@ For skl_model.SKLModelSet, the preprocess method also generates a PCA dataset (`
 
 *PCA is not implemented in GBM and tf/keras models.*
 
-##### Grid CV
+#### Grid CV
 
 Set grid values for cross-validation:
 ```python
@@ -150,7 +150,7 @@ results_df = model.cv_results
 ```
 
 
-##### Generate predictions
+#### Generate predictions
 CV predictions for each CV fold:
 ```python
 cv_outputs = model.cv_outputs()
@@ -161,14 +161,14 @@ test_outputs = model.test_outputs()
 ```
 Predictions are returned as pandas DataFrame.
 
-##### Plot training metrics
+#### Plot training metrics
 
 Implemented for GBMModel and tf/keras FFN models only.  Plots round-by-round validation metrics (depending on the model and metrics selected) of the last completed train/eval routine.  Plots displayed inline in notebooks, and also saved as `./evals_plot.png`.
 ```python
 model.plot_results(filename='evals_plot.png')
 ```
 
-##### Plot regression predictions
+#### Plot regression predictions
 
 Implemented for GBM and tf/keras.  When calling `grid_cv()`, pass `plot_n_samples` (sample predictions per fold) to generate a plot of predicted vs. actual regression results by fold.  Plots displayed inline in notebooks, and also saved as `./CV_preds_plot.png`.
 ```python
