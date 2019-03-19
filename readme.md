@@ -1,6 +1,6 @@
 # mltools
 
-mltools is a packaging of standard machine learning models from [scikit-learn](https://scikit-learn.org/stable/supervised_learning.html#supervised-learning), [XGBoost]((https://xgboost.readthedocs.io), [LightGBM](https://lightgbm.readthedocs.io),  [TensorFlow](https://www.tensorflow.org/guide/summaries_and_tensorboard), and the tf.keras implementation of [Keras](https://keras.io/).
+mltools is a packaging of standard machine learning models from [scikit-learn](https://scikit-learn.org/stable/supervised_learning.html#supervised-learning), [XGBoost](https://xgboost.readthedocs.io), [LightGBM](https://lightgbm.readthedocs.io),  [TensorFlow](https://www.tensorflow.org/guide/summaries_and_tensorboard), and the tf.keras implementation of [Keras](https://keras.io/).
 
 mltools features include:
 * Consistent interface for common ML libraries
