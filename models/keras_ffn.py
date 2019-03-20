@@ -16,7 +16,7 @@ from .base_model import BaseModel
 
 
 class FFNModel(BaseModel):
-    def __init__(self, X_train, y_train, X_test, params_file=None, folds_lookup,
+    def __init__(self, X_train, y_train, X_test, params_file=None, folds_lookup=None,
                  prefix=None, weights=None, tf_path=None, logger=None):
         BaseModel.__init__(self, X_train, y_train, X_test, params_file, folds_lookup,
             prefix, logger)
@@ -438,12 +438,11 @@ class FFNModel(BaseModel):
 
 class FFNRegressor(FFNModel):
 
-    def __init__(self, X_train, y_train, X_test, params_file=None, folds_lookup,
+    def __init__(self, X_train, y_train, X_test, params_file=None, folds_lookup=None,
         prefix='keras_regressor', weights=None, tf_path=r'/mltools/tf', logger=None):
         FFNModel.__init__(self, X_train, y_train, X_test, params_file, folds_lookup,
             prefix, weights, tf_path, logger)
         self.metrics = ['MSE', 'MAE']
-        self.ckpt_file = ckpt_file
 
 
     def init_hparams(self):
@@ -525,13 +524,12 @@ class FFNRegressor(FFNModel):
 
 
 class FFNBinaryClassifier(FFNModel):
-    def __init__(self, X_train, y_train, X_test, params_file, folds_lookup,
+    def __init__(self, X_train, y_train, X_test, params_file, folds_lookup=None,
         prefix='keras_classifier', weights=None, tf_path=r'/mltools/tf', logger=None):
         FFNModel.__init__(self, X_train, y_train, X_test, params_file, folds_lookup,
             prefix, weights, tf_path, logger)
         self.y_train = self.y_train.astype(int)
         self.metrics = ['AUC', 'acc', 'precision', 'recall']
-        self.ckpt_file = ckpt_file
 
 
     def best_eval_multi(self):

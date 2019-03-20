@@ -175,13 +175,13 @@ class GBMModel(BaseModel):
                 left_index=True, right_index=True)
 
         elif self.library == 'lgbm':
-            columns = [['feat', 'weight', 'gain']]
+            columns = ['feat', 'weight', 'gain']
             feat_weight = self.clf.feature_importance(importance_type='split')
             feat_gain = self.clf.feature_importance(importance_type='gain')
-            feat_imp_df = pd.DataFrame(np.c_[X_train.columns.values,
+            feat_imp_df = pd.DataFrame(np.c_[self.X_train.columns.values,
                 feat_weight, feat_gain], columns=columns)
 
-        return feat_imp_df.sort_values(sort, ascending=False)
+        return feat_imp_df.sort_values(by=sort, ascending=False)
 
 
     def eval(self, fold=1, plot_flag=True):
