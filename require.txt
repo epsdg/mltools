@@ -1,10 +1,12 @@
 numpy
 pandas
 matplotlib
+jupyter
 pyyaml
 
 joblib
 "dask[complete]"
+dask distributed
 
 scikit-learn
 xgboost

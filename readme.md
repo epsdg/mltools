@@ -3,12 +3,11 @@
 mltools is a packaging of standard machine learning models from [scikit-learn](https://scikit-learn.org/stable/supervised_learning.html#supervised-learning), [XGBoost](https://xgboost.readthedocs.io), [LightGBM](https://lightgbm.readthedocs.io),  [TensorFlow](https://www.tensorflow.org/guide/summaries_and_tensorboard), and the tf.keras implementation of [Keras](https://keras.io/).
 
 mltools features include:
-* Consistent interface for common ML libraries
+* Consistent interface and methods for common ML libraries
 * Simplified access to hyperparameters via a yaml file
 * Detailed, persistent experiment logging.  Hyperparameters, features, and cross-validation metrics of all experiments are logged to stdout and to a log file.  The same logger instance can also be used for feature importance results and other relevant info.  TensorFlow and Keras models also generate output to Tensorboard summaries.
-* Efficient CV for model stacking, using a persistent index of fold assignments to prevent data leakage across folds.
-* Parallel/multiprocessing CV workflows using your choice of backend ([concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html), [joblib.Parallel](https://joblib.readthedocs.io/en/latest/generated/joblib.Parallel.html), [dask](https://docs.dask.org/en/latest/), or [dask-distributed](http://distributed.dask.org/en/latest/index.html)).  Multithreading / multiprocessing is the default implementation for scikit-learn model sets.  Use dask-distributed for convenient deployment on clusters or multi-core instances, with a convenient [dashboard](http://distributed.dask.org/en/latest/web.html).    *XGBoost, LightGBM, TensorFlow, and Keras models rely on the default multiprocessing implementation.*
-
+* Efficient cross validation for model stacking, using a persistent index of fold assignments to prevent data leakage across folds.
+* Parallel/multiprocessing CV workflows using your choice of backend ([concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html), [joblib.Parallel](https://joblib.readthedocs.io/en/latest/generated/joblib.Parallel.html), [dask](https://docs.dask.org/en/latest/), or [dask-distributed](http://distributed.dask.org/en/latest/index.html)).
 
 ## Model Sets
 
@@ -105,18 +104,17 @@ model.load_hparams()
 ```
 
 #### Preprocess inputs
-
 * Available on all model classes.
 * Recommend mean-filling for all models unless you're sure there are no missing values.
 * Recommend standardizing for all tf/keras models and most sklearn models (all linear model subclasses)
 
-  **Args**:
-  * `fillna`, bool, fill NaNs
-  * `fill_with`, string in {'mean', 'median'}
-  * `standardize`, bool, center and standard-scale inputs
-  * `clip_outliers`, int or None.  If int:
-    * clip all input values > `clip_outliers` to `clip_outliers`
-    * clip all input values < **-**`clip_outliers` to **-**`clip_outliers`
+**Args**:
+* `fillna`, bool, fill NaNs
+* `fill_with`, string in {'mean', 'median'}
+* `standardize`, bool, center and standard-scale inputs
+* `clip_outliers`, int or None.  If int:
+  * clip all input values > `clip_outliers` to `clip_outliers`
+  * clip all input values < **-**`clip_outliers` to **-**`clip_outliers`
 
 ```python
 model.preprocess(fillna=True,
@@ -302,7 +300,21 @@ For a detailed explanation, see the footnote below.
 
 ### scikit-learn models:
 
-The `cv_predictions` and `test_predictions` methods implement multiprocessing (with user choice of backend) by default.  For a (usually much slower) loop-based version, use `cv_predictions_loop` and `test_predictions_loop`.
+#### Parallel Cross Validation
+
+Multithreading / multiprocessing is the default implementation for scikit-learn model sets.  Use dask-distributed for convenient deployment on clusters or multi-core instances, with a convenient [dashboard](http://distributed.dask.org/en/latest/web.html).    *XGBoost, LightGBM, TensorFlow, and Keras models rely on the default multiprocessing implementation.*
+
+For SKLModelSet, the following methods accept accept optional args `backend` and `n_processes`:
+```python
+from mltools.models.skl_model import SKLModelSet
+
+model = SKLModelSet(..., backend='joblib-threads' n_processes=2)
+model.grid_cv(backend='tpe' n_processes=2)
+model.cv_predictions(backend='dask' n_processes=4)
+model.test_predictions(backend='dask-dist' n_processes=8)
+```
+
+The `cv_predictions` and `test_predictions` methods implement multiprocessing. For a (slower) loop-based version, use `cv_predictions_loop()` and `test_predictions_loop()`.
 
 ---
 ### A note on keras_ffn binary metrics:
