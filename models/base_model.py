@@ -205,7 +205,14 @@ class BaseModel():
         X_val = self.X_train.reindex(test_idx)
         y_train = self.y_train.reindex(train_idx)
         y_val = self.y_train.reindex(test_idx)
+        
+        X_train, X_val = self.get_fold_features(X_train, X_val)
+        
         return X_train, y_train, X_val, y_val
+    
+
+    def get_fold_features(self, train, test):
+        return train, test
 
 
     def _get_cv_params_grid(self):
