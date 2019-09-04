@@ -123,7 +123,7 @@ class GBMModel(BaseModel):
         max_evals = ['auc', 'acc', 'map']
 
         #common LightGBM metrics
-        min_evals += ['binary_error', 'multi_error', 'mape',
+        min_evals += ['binary_error', 'binary_logloss', 'multi_error', 'mape',
                       'l2', 'l2_root', 'l1', 'xentropy']
 
         best_out = []
@@ -178,8 +178,10 @@ class GBMModel(BaseModel):
             columns = ['feat', 'weight', 'gain']
             feat_weight = self.clf.feature_importance(importance_type='split')
             feat_gain = self.clf.feature_importance(importance_type='gain')
-            feat_imp_df = pd.DataFrame(np.c_[self.X_train.columns.values,
+            feat_imp_df = pd.DataFrame(np.c_[self.clf.feature_name(),
                 feat_weight, feat_gain], columns=columns)
+            feat_imp_df.weight = feat_imp_df.weight.astype(float)
+            feat_imp_df.gain = feat_imp_df.gain.astype(float)
 
         return feat_imp_df.sort_values(by=sort, ascending=False)
 
@@ -351,12 +353,13 @@ class GBMModel(BaseModel):
         self.logger.info(f'all params restored from {self.params_file}.')
 
         output_cols = [self.prefix + c for c in self.output_suffix]
-        dset_train = self.get_dataset(self.X_train, self.y_train)
+        X_train, X_test = self.get_fold_features(self.X_train, self.X_test)
+        dset_train = self.get_dataset(X_train, self.y_train)
         self.logger.info(f'training for {self.params["train_rounds"]} rounds...')
         self.train(dset_train)
         self.logger.info('generating predictions...')
-        preds_p, preds_margin = self.predict(self.X_test)
+        preds_p, preds_margin = self.predict(X_test)
         self.logger.info(f'test set outputs complete.')
         return pd.DataFrame(np.c_[preds_p, preds_margin],
-                                  index=self.X_test.index,
+                                  index=X_test.index,
                                   columns=output_cols)
